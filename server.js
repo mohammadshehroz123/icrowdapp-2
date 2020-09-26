@@ -35,9 +35,7 @@ container.resolve(function (_, user) {
 
         configureApp(app);
 
-        configureApp(app);
-
-    }
+	}
 
     function configureApp(app) {
 

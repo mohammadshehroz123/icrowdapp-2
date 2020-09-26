@@ -22,18 +22,18 @@ const container = require('./container');
 container.resolve(function (_, user) {
 
     mongoose.Promise = global.Promise;
-    mongoose.connect('mongodb://localhost:27017/crowdWeb', { useMongoClient: true });
+	mongoose.connect("mongodb+srv://shehroz:shehroz@cluster0.sylbf.mongodb.net/db?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
 
     var app = initializeApp();
 
     function initializeApp() {
 
         var app = express();
-        var port = process.env.port || 3000;
-        var server = http.createServer(app);
-        server.listen(port, function () {
-            console.log("Connected");
-        });
+        var server = http.createServer();
+		var port_number = server.listen(process.env.PORT || 3000);
+		app.listen(port_number);
+
+        configureApp(app);
 
         configureApp(app);
 

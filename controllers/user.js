@@ -3,7 +3,8 @@
 module.exports = function(passport, validation, email, User) {
     return {
         setRouting : function(router) {
-            
+            router.get('/', this.homePage);
+			
 			router.get('/auth/google', this.googleLoginRedirect);
             router.get('/auth/google/callback', this.googleLoginCallback);
 			
@@ -22,14 +23,14 @@ module.exports = function(passport, validation, email, User) {
 			router.get('/dashboard', this.dashboard);
             router.get('/logout', this.logOut);
         },
+		
+		homePage : function(req, res) {
+			res.send("Welcome");
+		},
 
         loginView : function(req, res) {
-			if(req.remember) {
-				res.redirect('/dashboard');
-			} else {
-				const messages = req.flash('error');
-				res.render("login", {hasErrors : (messages.length > 0) ? true : false, messages : messages});
-			}
+			const messages = req.flash('error');
+			res.render("login", {hasErrors : (messages.length > 0) ? true : false, messages : messages});
         },
 		login : passport.authenticate('local.login', {
             successRedirect : '/dashboard',

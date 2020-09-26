@@ -20,7 +20,7 @@ passport.use('local.login', new LocalStrategy({
     passwordField : 'password',
     passReqToCallback : true
 }, function(req, email, password, done){
-    User.findOne(/*$or:[*/{email : email}/*,{username : email}]*/, function(err, user){
+    User.findOne({email : email}, function(err, user){
         const messages = [];
         if(err) {
             return done(err, req.flash('error', messages));
@@ -29,9 +29,6 @@ passport.use('local.login', new LocalStrategy({
             messages.push('Email Does Not Exist or Password is Invalid');
             return done(null, false, req.flash('error', messages));
         }
-		if(req.body.remember) {
-			req.remember = true;
-		}
         return done(null, user);
     });
 }));

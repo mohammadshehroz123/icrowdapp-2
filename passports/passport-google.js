@@ -23,8 +23,7 @@ passport.use(new GoogleStrategy({
     callbackURL : 'http://localhost:3000/auth/google/callback'
 }, function(req, accessToken, refreshToken, profile, done){
     User.findOne({google : profile.id}, function(err, user){
-        console.log("HI");
-		if(err) {
+        if(err) {
             return done(err);
         }
         if(user) {

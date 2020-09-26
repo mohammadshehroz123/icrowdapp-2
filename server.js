@@ -12,6 +12,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const validator = require('express-validator');
+require('dotenv').config();
 
 // Container
 
@@ -32,7 +33,7 @@ container.resolve(function (_, user) {
         var server = http.createServer();
 		var port_number = server.listen(process.env.PORT || 3000);
 		app.listen(port_number);
-
+		
         configureApp(app);
 
 	}

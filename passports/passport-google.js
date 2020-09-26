@@ -20,7 +20,7 @@ passport.use(new GoogleStrategy({
     clientID: '414800419877-cv61tpqmerdh51m5jjmfb88a0v230g6r.apps.googleusercontent.com',
     clientSecret: 'CbmrEbNLC4yygt8XoY6Z_BLe',
     passReqToCallback : true,
-    callbackURL : 'https://afternoon-castle-38213.herokuapp.com/auth/google/callback'
+    callbackURL : 'http://localhost:3000/auth/google/callback'
 }, function(req, accessToken, refreshToken, profile, done){
     User.findOne({google : profile.id}, function(err, user){
         if(err) {

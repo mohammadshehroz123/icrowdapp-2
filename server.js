@@ -23,9 +23,9 @@ const container = require('./container');
 container.resolve(function (_, user) {
 
     mongoose.Promise = global.Promise;
-    mongoose.connect('mongodb://localhost:27017/student_1', { useUnifiedTopology: true, useUrlParser: true });
-
-    var app = initializeApp();
+	mongoose.connect("mongodb+srv://shehroz:shehroz@cluster0.sylbf.mongodb.net/db?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
+    
+	var app = initializeApp();
 
     function initializeApp() {
 

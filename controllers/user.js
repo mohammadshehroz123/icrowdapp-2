@@ -1,5 +1,6 @@
 'use strict';
 var fs = require('fs');
+var path = require('path');
 
 module.exports = function (formidable, passport, validation, email, User) {
 	return {
@@ -167,7 +168,7 @@ module.exports = function (formidable, passport, validation, email, User) {
 			var form = new formidable.IncomingForm();
 			form.parse(req, function (err, fields, files) {
 				var oldpath = files.filetoupload.path;
-				var newpath =    'C:/ICrowd/public/uploads/' + files.filetoupload.name;
+				var newpath =  path.join(__dirname, '../public/uploads/' + files.filetoupload.name);
 				fs.rename(oldpath, newpath, function (err) {
 					if (err) throw err;
 					User.findOneAndUpdate(
@@ -183,7 +184,7 @@ module.exports = function (formidable, passport, validation, email, User) {
 			});
 		},
 		renamePhoto: function(req, res) {
-			fs.rename('C:/ICrowd/public/uploads/' + req.body.old_name, 'C:/ICrowd/public/uploads/' + req.body.new_name, function(err) {
+			fs.rename(path.join(__dirname, '../public/uploads/') + req.body.old_name, path.join(__dirname, '../public/uploads/') + req.body.new_name, function(err) {
 				if ( err ) throw err;
 				
 				let { old_name, new_name } = req.body;

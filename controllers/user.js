@@ -1,6 +1,8 @@
 'use strict';
 var fs = require('fs');
 var path = require('path');
+var mv = require('mv');
+
 
 module.exports = function (formidable, passport, validation, email, User) {
 	return {
@@ -167,19 +169,24 @@ module.exports = function (formidable, passport, validation, email, User) {
 		uploadPhoto: function(req, res) {
 			var form = new formidable.IncomingForm();
 			form.parse(req, function (err, fields, files) {
-				var oldpath = files.filetoupload.path;
-				var newpath =  path.join(__dirname, '../public/uploads/' + files.filetoupload.name);
-				fs.rename(oldpath, newpath, function (err) {
-					if (err) throw err;
+			var oldpath = files.filetoupload.path;
+			var newpath =    path.join(__dirname, '../public/uploads/' + files.filetoupload.name);
+			mv(oldpath, newpath, function (err) {
+			//if (err) throw err;
+				if(!err) {
 					User.findOneAndUpdate(
 						{_id: req.user._id},
 						{ 
 							$push: {uploadedImages: files.filetoupload.name }
 						}, function(err, doc) {
-						if(doc) {
-							res.redirect('/photos');
-						}
-					});
+							if(doc) {
+								res.redirect('/photos');
+							}
+						});
+				}
+				else {
+					res.send("Error in uploading image");
+				}
 				});
 			});
 		},

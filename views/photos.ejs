@@ -134,7 +134,7 @@
 			else {
 				$.ajax({
 					method: "POST",
-					url: "http://localhost:3000/photos/rename",
+					url: "https://tranquil-plains-27029.herokuapp.com/photos/rename",
 					data: {old_name: hidden_field.val(), new_name: field.val()},
 					success: function(response) {
 						window.alert(response);

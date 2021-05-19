@@ -6,8 +6,8 @@ class MailSender {
 		this.transporter = nodemailer.createTransport({
 			service: 'gmail',
 			auth: {
-				user: 'ishantishant2020@gmail.com',
-				pass: 'ishant123'
+				user: 'testmailnodemailer0@gmail.com',
+				pass: 'ojakamkar4321'
 			}
 		});
 	}

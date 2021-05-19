@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>ICrowd | Register</title>
+    <title>Join Brothers Consultancy. | Register</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Font Awesome -->
@@ -32,7 +32,7 @@
 <body class="hold-transition sidebar-mini layout-fixed">
 
     <nav class="navbar navbar-expand-sm bg-light">
-        <a class="navbar-brand" href="#">ICrowd Task Web Application</a>
+        <a class="navbar-brand" href="#">Join Brothers Consultancy.</a>
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
                 <a class="nav-link" href="/login">Login</a>
@@ -68,23 +68,13 @@
                     <form role="form" method="post" action="/signup">
                         <div class="card-body">
                             
-							<div class="form-group">
-                                <label for="exampleInputEmail1">Country of Residence * :</label></br>
-                                <div>
-									<% include countries.ejs %>
-								</div>
-                            </div>
 							
-							<div class="row">
-								<div class="form-group col-lg-6">
-									<label for="exampleInputEmail1">First Name * :</label>
-									<input type="text" class="form-control" placeholder="Enter first name" name="first_name" />
-								</div>
-								<div class="form-group col-lg-6">
-									<label for="exampleInputEmail1">Last Name * :</label>
-									<input type="text" class="form-control" placeholder="Enter last name" name="last_name" />
-								</div>
-							</div>
+							
+							<div class="form-group">
+                                <label for="exampleInputPassword1">Full Name * :</label>
+                                <input type="text" class="form-control"
+                                    placeholder="Enter Full Name" name="full_name" />
+                            </div>
 							
                             <div class="form-group">
                                 <label for="exampleInputPassword1">Email * :</label>
@@ -100,32 +90,6 @@
                             <div class="form-group">
                                 <label for="exampleInputPassword1">Confirm Password * :</label>
                                 <input type="password" class="form-control" placeholder="Confirm Password" name="confirm_password" />
-                            </div>
-							
-							<div class="form-group">
-                                <label for="exampleInputPassword1">Address * :</label>
-                                <textarea rows="3" class="form-control" placeholder="Address" name="address"></textarea>
-                            </div>
-							
-							<div class="row">
-								<div class="form-group col-lg-6">
-									<label for="exampleInputEmail1">City * :</label>
-									<input type="text" class="form-control" placeholder="City" name="city" />
-								</div>
-								<div class="form-group col-lg-6">
-									<label for="exampleInputEmail1">State, Province or Region * :</label>
-									<input type="text" class="form-control" placeholder="State, Province or Region" name="state" />
-								</div>
-							</div>
-							
-							<div class="form-group">
-                                <label for="exampleInputPassword1">ZIP / Postal Code :</label>
-                                <input type="number" class="form-control" placeholder="ZIP / Postal Code" name="zip_code" />
-                            </div>
-							
-							<div class="form-group">
-                                <label for="exampleInputPassword1">Mobile Phone Number :</label>
-                                <input type="number" class="form-control" placeholder="Mobile Phone Number" name="contact_number" />
                             </div>
 							
                         </div>

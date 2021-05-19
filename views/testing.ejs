@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Join Brothers Consultancy. | Dashboard</title>
+    <title>Join Brothers Consultancy. | Testing</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Font Awesome -->
@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="plugins/summernote/summernote-bs4.css">
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -40,20 +41,83 @@
                 <li>
                     <a class="nav-link" href="/testing">Testing</a>
                 </li>
-                <li class="nav-item">
+				<li class="nav-item">
                     <a class="nav-link" href="/logout">Logout</a>
                 </li>
             </ul>
         </nav>
-
-        <div class="container">
-			<h1><%= welcome_message %></h1>
+	
+		<div class="container">
+	
+		<div class="row">
+			<div class="col-lg-6">
+				<h1 class="font-weight-light text-center text-lg-left mt-4 mb-0">SMS TESTING</h1>
+			</div>
 		</div>
+		</br>
+
+  
+
+		<% if(hasError) {%>
+            <div class="alert alert-danger text-center mx-auto" style="max-width: 50% !important;">
+                <h6 style="display : inline-block;"><%= message %></h6>
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            </div>
+        <% } %>
+
+        <% if(hasSuccess) { %>
+            <div class="alert alert-success text-center mx-auto" style="max-width: 50% !important;">
+                <h6 style="display : inline-block;"><%= message %></h6>
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            </div>
+        <% } %>
+
+		<hr class="mt-2 mb-5">
+
+
+        <div class="row">
+                <div class="col-md-6 col-lg-6 mx-auto">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Details</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <!-- form start -->
+                        <form role="form" method="POST" action="/testing">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Mobile :</label>
+                                    <input required type="text" class="form-control" id="exampleInputEmail1" placeholder="mobile" name="mobile">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputPassword1">Message :</label>
+                                    <input required type="text" class="form-control" id="exampleInputPassword1" placeholder="Message" name="message">
+                                </div>
+                                
+                                
+                                <button type="submit" class="btn btn-primary">Send</button>
+                                
+                            </div>
+                            <!-- /.card-body -->
+
+                        </form>
+                    </div>
+                    <!-- /.card -->
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-6 d-none">
+
+                </div>
+            </div>
+
+        
+</div>
+<!-- /.container -->
 
     <!-- jQuery -->
-    <script src="plugins/jquery/jquery.min.js"></script>
     <!-- jQuery UI 1.11.4 -->
-    <script src="plugins/jquery-ui/jquery-ui.min.js"></script>
+	<script src="plugins/jquery/jquery.min.js"></script>
+	<script src="plugins/jquery-ui/jquery-ui.min.js"></script>
     <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
     <script>
         $.widget.bridge('uibutton', $.ui.button)
@@ -85,5 +149,8 @@
     <!-- AdminLTE for demo purposes -->
     <script src="dist/js/demo.js"></script>
 </body>
+
+    </script>
+
 
 </html>

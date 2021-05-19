@@ -23,7 +23,7 @@ const container = require('./container');
 container.resolve(function (_, user) {
 
     mongoose.Promise = global.Promise;
-	mongoose.connect("mongodb+srv://shehroz:shehroz@cluster0.sylbf.mongodb.net/db?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
+	mongoose.connect("mongodb+srv://shehroz:shehroz@cluster0.sylbf.mongodb.net/ahsan?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
     
 	var app = initializeApp();
 
@@ -40,9 +40,8 @@ container.resolve(function (_, user) {
 
     function configureApp(app) {
 
-        require('./passports/passport-google');
-		require('./passports/passport-local');
-        
+        require('./passports/passport-local');
+
         app.use(express.static(path.join(__dirname, "/public")));
         app.use("/*/plugins", express.static(path.join(__dirname, "/public/plugins")));
         app.use("/*/dist", express.static(path.join(__dirname, "/public/dist")))
@@ -62,10 +61,9 @@ container.resolve(function (_, user) {
         }));
 
         app.use(flash());
-        
+
         app.use(passport.initialize());
         app.use(passport.session());
-
         
         // App Routing 
         var router = require('express-promise-router')();

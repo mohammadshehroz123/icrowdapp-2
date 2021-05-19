@@ -28,20 +28,14 @@ module.exports = function (formidable, path) {
             })
         },
 
-        getSignupValidation: function (req, res, next) {
+        /*getSignupValidation: function (req, res, next) {
 
-            req.checkBody('country', 'Country of Residence is required').notEmpty();
-            req.checkBody('first_name', 'First name is required').notEmpty();
-            req.checkBody('last_name', 'Last name is required').notEmpty();
+            req.checkBody('full_name', 'Full name is required').notEmpty();
 
             req.checkBody('email', 'Email is Invalid').isEmail();
             req.checkBody('email', 'Email must not be empty').notEmpty();
             req.checkBody('password', 'Password must not be empty').notEmpty();
             req.checkBody('password', 'Password must be 8 or more characters longer').isLength({ min: 8 });
-
-            req.checkBody('address', 'Address is Required').notEmpty();
-            req.checkBody('city', 'City is Required').notEmpty();
-            req.checkBody('state', 'State, Province or Region is required').notEmpty();
 
             req.getValidationResult().then((result) => {
                 var errors = result.array();
@@ -54,14 +48,6 @@ module.exports = function (formidable, path) {
                     messages.push("Password does not match");
                 }
 
-                if (req.body.address.trim() == '') {
-                    messages.push("Address is required");
-                }
-
-                if (req.body.zip_code && !(/(^\d{5}$)|(^\d{5}-\d{4}$)/.test(req.body.zip_code))) {
-                    messages.push("Zip Code is not valid");
-                }
-
                 if (messages.length > 0) {
                     res.render("register", { hasErrors: true, messages: messages });
                 }
@@ -72,7 +58,7 @@ module.exports = function (formidable, path) {
                 if (err)
                     throw err;
             });
-        },
+        },*/
 
         resetPassword: function (req, res, next) {
             req.checkBody('password', 'Password must not be empty').notEmpty();
@@ -100,6 +86,18 @@ module.exports = function (formidable, path) {
             }).catch((err) => {
                 throw err;
             })
+        },
+
+        validateNumber: function(req, res, next) {
+            var patt = /^((\+92)|(0092))-{0,1}\d{3}-{0,1}\d{7}$|^\d{11}$|^\d{4}-\d{7}$/;
+            var response = patt.test(req.body.mobile);
+
+            if(!response) {
+                res.render("testing", { hasError: true, hasSuccess: false, message: "Invalid Number" });
+            }
+            else {
+                next();
+            }  
         }
     }
 }

@@ -4,6 +4,8 @@ var path = require('path');
 var multer = require('multer');
 var fetch = require('node-fetch');
 var {authenticate} = require('../middleware/authenticate');
+var redis = require('redis');
+var client = redis.createClient(6379);
 
 // Multer Middleware for uploading files
 const storage = multer.diskStorage({
@@ -52,7 +54,7 @@ module.exports = function (formidable, passport, validation, User, email) {
 			router.get('/upload', authenticate, this.uploadView);
 			router.post('/file/upload', authenticate, this.uploadFile);
 			
-			router.get('/details/uploads/:file', authenticate, this.details);
+			router.get('/details/uploads/:file', this.details);
 
 			router.get('/testing', authenticate, this.testingView);
 			router.post('/testing', authenticate, validation.validateNumber, this.testing);
@@ -186,36 +188,43 @@ module.exports = function (formidable, passport, validation, User, email) {
 		
 		details: function(req, res) {
 			if (fs.existsSync(path.join(__dirname, "../public/uploads/" + req.params.file))) {
-				var Excel = require('exceljs');
+				try {
+   					const file = req.params.file;
+ 					client.get(file, function (err, data) {
+     					if (data) {
+       						res.render("details.ejs", {hasSuccess: true, hasError: false, data: JSON.parse(data)});
+     					} else { // When the data is not found in the cache then we can make request to the server
+ 							var Excel = require('exceljs');
 
-				var wb = new Excel.Workbook();
-				var filePath = path.resolve(__dirname,'../public/uploads/' + req.params.file);
+							var wb = new Excel.Workbook();
+							var filePath = path.resolve(__dirname,'../public/uploads/' + req.params.file);
 
-				wb.xlsx.readFile(filePath).then(function(){
-
-					var sh = wb.getWorksheet("Sheet1");
-					var data = new Array();
-
-    				//Get all the rows data [1st and 2nd column]
-    				for (let i = 1; i < sh.rowCount; i++) {
-    					var number = sh.getRow(i).getCell(1).value;
-
-    					if(number != null && number.length == 11) {
-    						data.push(number);
-    					}
-    				}
-
-    				//Send Response
-    				if(data.length > 0) {
-    					res.render("details.ejs", {hasSuccess: true, hasError: false, data: data});
-    				} else {
-    					res.render("details.ejs", {hasSuccess: false, hasError: true, message: "Could not fetch data"});
-    				}
-    			});		
-			}
-			else {
-				res.render("details.ejs", {hasSuccess: false, hasError: true, message: "Invalid File Name"});
-			}
+							wb.xlsx.readFile(filePath).then(function(){
+								var sh = wb.getWorksheet("Sheet1");
+								let data = new Array();
+								//Get all the rows data [1st and 2nd column]
+    							for (let i = 1; i < sh.rowCount; i++) {
+    								var number = sh.getRow(i).getCell(1).value;
+									if(number != null && number.length == 11) {
+    									data.push(number);
+    								}
+    							}
+								//Send Response
+    							if(data.length > 0) {
+    								client.setex(file, 1440, JSON.stringify(data));
+    								res.render("details.ejs", {hasSuccess: true, hasError: false, data: data});
+    							} else {
+    								res.render("details.ejs", {hasSuccess: false, hasError: true, message: "Could not fetch data"});
+    							}
+    						});	
+     					}
+   					}) 
+   				} catch (error) {
+     				console.log(error)
+ 				}
+ 			} else {
+ 				res.render("details.ejs", {hasSuccess: false, hasError: true, message: "Invalid file name!"});
+ 			}
 		},
 
 		testingView: function(req, res) {

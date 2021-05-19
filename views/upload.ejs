@@ -41,53 +41,53 @@
                 <li>
                     <a class="nav-link" href="/testing">Testing</a>
                 </li>
-				<li class="nav-item">
+                <li class="nav-item">
                     <a class="nav-link" href="/logout">Logout</a>
                 </li>
             </ul>
         </nav>
-		
-		<div class="modal" id="myModal">
-			<div class="modal-dialog">
-				<div class="modal-content">
-				<!-- Modal Header -->
-					<div class="modal-header">
-						<h4 class="modal-title">Upload File</h4>
-						<button type="button" class="close" data-dismiss="modal">&times;</button>
-					</div>
+        
+        <div class="modal" id="myModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Upload File</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
 
-				<!-- Modal body -->
-					<div class="modal-body">
-						Please select valid Excel File *
-					</div>
+                <!-- Modal body -->
+                    <div class="modal-body">
+                        Please select valid Excel File *
+                    </div>
 
-				<!-- Modal footer -->
-					<div class="modal-footer">
-						<form method="POST" action="/file/upload" enctype="multipart/form-data">
-							<input type="file" name="filetoupload" />
-							<button type="submit" class="btn btn-success">Upload</button>
-						</form>
-					</div>
+                <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <form method="POST" action="/file/upload" enctype="multipart/form-data">
+                            <input type="file" name="filetoupload" />
+                            <button type="submit" class="btn btn-success">Upload</button>
+                        </form>
+                    </div>
 
-				</div>
-			</div>
-		</div>
+                </div>
+            </div>
+        </div>
 
-		<div class="container">
-	
-		<div class="row">
-			<div class="col-lg-6">
-				<h1 class="font-weight-light text-center text-lg-left mt-4 mb-0">Uploaded Images</h1>
-			</div>
-			<div class="col-lg-6" style="text-align: center;">
-				<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" style=" margin: 0; position: absolute; top: 50%;-ms-transform: translateY(-50%);transform: translateY(-50%);">
-					Upload File
-				</button>
-			</div>
-		</div>
-		</br>
+        <div class="container">
+    
+        <div class="row">
+            <div class="col-lg-6">
+                <h1 class="font-weight-light text-center text-lg-left mt-4 mb-0">Uploaded Images</h1>
+            </div>
+            <div class="col-lg-6" style="text-align: center;">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" style=" margin: 0; position: absolute; top: 75%;-ms-transform: translateY(-50%);transform: translateY(-50%);">
+                    Upload File
+                </button>
+            </div>
+        </div>
+        </br>
 
-		<% if(hasError) {%>
+        <% if(hasError) {%>
             <div class="alert alert-danger text-center mx-auto" style="max-width: 50% !important;">
                 <h6 style="display : inline-block;"><%= message %></h6>
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -101,24 +101,24 @@
             </div>
         <% } %>
 
-		<hr class="mt-2 mb-5">
+        <hr class="mt-2 mb-5">
 
-		<div class="row text-center text-lg-left">
+        <div class="row text-center text-lg-center">
 
-			
-			<% _.forEach(files, function(file, index){ %>
-                <div class="col-lg-3 col-md-4 col-6 text-center py-2" style="border: 1px solid black; border-radius: 1em;">
-					<h6>File # <%= (index + 1) %></h6> 
-					<a href="#" class="d-block mb-2">
-						<img class="img-fluid img-thumbnail" style="width:200px !important; height: 200px !important;" src='/uploads/excel.jpg' alt="">
-					</a>
-					<div class="input-group text-center">
-						<a target="_blank" href="/details<%= file %>" class="btn btn-info mx-auto" id="<%= index %>">Details</a>
-					</div>					
-				</div>
+            
+            <% _.forEach(files, function(file, index){ %>
+                <div class="col-lg-3 col-md-4 col-6 text-center py-2 m-2" style="border: 1px solid black; border-radius: 1em; box-sizing: border-box !important;">
+                    <h6>File # <%= (index + 1) %></h6> 
+                    <a href="#" class="d-block mb-2">
+                        <img class="img-fluid img-thumbnail" style="width:200px !important; height: 200px !important;" src='/uploads/excel.jpg' alt="">
+                    </a>
+                    <div class="input-group text-center">
+                        <a target="_blank" href="/details<%= file %>" class="btn btn-info mx-auto" id="<%= index %>">Details</a>
+                    </div>                  
+                </div>
             <% }) %>
             
-			
+            
   </div>
 
 </div>
@@ -127,36 +127,7 @@
 
     <!-- jQuery -->
     <!-- jQuery UI 1.11.4 -->
-	<script src="plugins/jquery/jquery.min.js"></script>
-	<script>
-		
-		let btns = $(".btn-info");
-		
-		btns.on('click', function() {
-			let id  = this.id;
-			let field = $("#field_" + id);
-			let hidden_field = $("#hidden_" + id);
-			
-			let extension = hidden_field.val().split(".")[1];
-			let new_extension = field.val().split(".")[1];
-			
-			if(extension.toLowerCase() != new_extension.toLowerCase()) {
-				return window.alert("Extension must not be changed");
-			}
-			
-			else {
-				$.ajax({
-					method: "POST",
-					url: "https://tranquil-plains-27029.herokuapp.com/photos/rename",
-					data: {old_name: hidden_field.val(), new_name: field.val()},
-					success: function(response) {
-						window.alert(response);
-						window.location.href = "https://tranquil-plains-27029.herokuapp.com/photos";
-					}
-				});
-			}
-		});
-	</script>
+    <script src="plugins/jquery/jquery.min.js"></script>
     <script src="plugins/jquery-ui/jquery-ui.min.js"></script>
     <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
     <script>

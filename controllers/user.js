@@ -177,7 +177,7 @@ module.exports = function (formidable, passport, validation, User, email) {
 							$push: {uploadedFiles: "/uploads/" + req.file.filename }
 						}, function(err, doc) {
 						if(doc) {
-							res.render("upload", {hasError: false, message: "File uploaded successfully!", hasSuccess: true, files: req.user.uploadedFiles});
+							res.redirect("/upload");
 						}
 					});	
 				}
@@ -200,7 +200,7 @@ module.exports = function (formidable, passport, validation, User, email) {
     				for (let i = 1; i < sh.rowCount; i++) {
     					var number = sh.getRow(i).getCell(1).value;
 
-    					if(number != null) {
+    					if(number != null && number.length == 11) {
     						data.push(number);
     					}
     				}

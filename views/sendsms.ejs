@@ -183,12 +183,11 @@
         $('#message').hide();
         console.log("/ajax/"+chunk+"/"+encodeURI(message)+""+file);
         $.ajax({
-            url: "http://localhost:3000/ajax",
+            url: "ajax",
             type: "POST",
             data: JSON.stringify({message: encodeURI(message), chunk: chunk, file: file}),
             contentType: 'application/json',
             success: function(response){
-                console.log(response);
                 if(Object.keys(response).length > 0) {
                     $('#image').hide();
 
@@ -197,6 +196,7 @@
                         location.reload();
                     } else {
                         $('#holder').show();
+                        $('#message').show();
                     }
                 }
             }

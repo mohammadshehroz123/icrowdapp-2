@@ -34,6 +34,20 @@
         <nav class="navbar navbar-expand-sm bg-light">
             <a class="navbar-brand" href="/dashboard">Join Brothers Consultancy.</a>
             <ul class="navbar-nav ml-auto">
+
+                <!-- Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                        BULK SMS
+                    </a>
+                    <div class="dropdown-menu">
+                        <% _.forEach(files, function(file, index){ %>
+                        <a class="dropdown-item" href="/sendsms<%= file.path %>"><%= file.title %></a>
+                        <% }) %>
+                    </div>
+                </li>
+
+
                 <li class="nav-item">
                     <a class="nav-link" href="/upload">Upload File</a>
                 </li>

@@ -51,11 +51,15 @@ module.exports = function (formidable, passport, validation, User, email) {
 
 			router.get('/upload', authenticate, this.uploadView);
 			router.post('/file/upload', authenticate, this.uploadFile);
+			router.get('/delete/uploads/:file', this.deleteFile);
 			
 			router.get('/details/uploads/:file', this.details);
 
 			router.get('/testing', authenticate, this.testingView);
 			router.post('/testing', authenticate, validation.validateNumber, this.testing);
+
+			router.get('/sendsms/uploads/:file', this.sendSmsView);
+			router.post('/ajax', this.ajax);
 			
 			router.get('/dashboard', authenticate, this.dashboard);
 			router.get('/logout', this.logOut);
@@ -153,12 +157,7 @@ module.exports = function (formidable, passport, validation, User, email) {
 		},
 
 		dashboard: function (req, res) {
-			if(req.user) {
-				return res.render("dashboard", { welcome_message: "Welcome " + req.user.fullname });
-			}
-			else {
-				res.redirect('/login');
-			}
+			return res.render("dashboard", { welcome_message: "Welcome " + req.user.fullname, files: req.user.uploadedFiles});
 		},
 		
 		uploadView: function(req, res) {
@@ -174,14 +173,42 @@ module.exports = function (formidable, passport, validation, User, email) {
 					User.findOneAndUpdate(
 						{_id: req.user._id},
 						{ 
-							$push: {uploadedFiles: "/uploads/" + req.file.filename }
+							$push: {uploadedFiles: {title: req.body.title, path: "/uploads/" + req.file.filename, chunks: []} }
 						}, function(err, doc) {
+						if(err) {
+							console.log(err);
+						}
 						if(doc) {
 							res.redirect("/upload");
 						}
+
 					});	
 				}
 			})
+		},
+
+		deleteFile: async function(req, res) {
+			if (fs.existsSync(path.join(__dirname, "../public/uploads/" + req.params.file))) {
+				var file = req.user.searchFile(req.params.file);
+				var index = req.user.uploadedFiles.map(function(e) { return e.path; }).indexOf("/uploads/"+req.params.file);
+				var r = await User.findOneAndUpdate({_id: req.user._id}, {$pull:{'uploadedFiles': file}});
+
+				if(r) {
+					try {
+						fs.unlink( path.join(__dirname, "../public/uploads/" + req.params.file), (err) => {
+							if(err) {
+								return console.log(err);
+							}
+							return;
+						});
+				
+					} catch(err) {
+						console.log(err);
+					} finally {
+						res.redirect("/upload");
+					}
+				}
+			}
 		},
 		
 		details: function(req, res) {
@@ -202,29 +229,139 @@ module.exports = function (formidable, passport, validation, User, email) {
 					}
 					//Send Response
 					if(data.length > 0) {
-						res.render("details.ejs", {hasSuccess: true, hasError: false, data: data});
+						res.render("details.ejs", {hasSuccess: true, hasError: false, data: data, files: req.user.uploadedFiles});
 					} else {
-						res.render("details.ejs", {hasSuccess: false, hasError: true, message: "Could not fetch data"});
+						res.render("details.ejs", {hasSuccess: false, hasError: true, message: "Could not fetch data", files: req.user.uploadedFiles});
 					}
 				});	
 			} else {
-			res.render("details.ejs", {hasSuccess: false, hasError: true, message: "Invalid file name!"});
-		}
-	},
+				res.render("details.ejs", {hasSuccess: false, hasError: true, message: "Invalid file name!", files: req.user.uploadedFiles});
+			}
+		},
 
 		testingView: function(req, res) {
-			return res.render("testing", {hasError:false, hasSuccess:false});
+			return res.render("testing", {hasError:false, hasSuccess:false, files: req.user.uploadedFiles});
 		},
 		testing: function(req, res) {
 			const url = 'http://api.m4sms.com/api/sendsms?id='+process.env.USER+'&pass='+process.env.PASS+'&mobile='+encodeURI(req.body.mobile)+'&brandname='+process.env.BRAND+'&msg='+encodeURI(req.body.message)+'&language=English;';
-			console.log(url);
 			fetch(url)
     		.then(res => res.json())
     		.then(json => {
     			if(json.Response == 'sent') {
-    				res.render("testing.ejs", {hasSuccess: true, hasError: false, message: "Message sent successfully!"});	
+    				res.render("testing.ejs", {hasSuccess: true, hasError: false, message: "Message sent successfully!", files: req.user.uploadedFiles});	
     			}
     		});
+		},
+
+		sendSmsView: function(req, res) {
+			var _res = req.user.findFile(req.params.file);
+			if( (Object.keys(_res).length) > 0) {
+				var Excel = require('exceljs');
+				var wb = new Excel.Workbook();
+				var filePath = path.resolve(__dirname,'../public/uploads/' + req.params.file);
+
+				wb.xlsx.readFile(filePath).then(function(){
+					var sh = wb.getWorksheet("Sheet1");
+					let data = new Array();
+					//Get all the rows data [1st and 2nd column]
+					for (let i = 1; i < sh.rowCount; i++) {
+						var number = sh.getRow(i).getCell(1).value;
+						if(number != null && number.length == 11) {
+							data.push(number);
+						}
+					}
+
+					//Send Response
+					if(data.length > 0) {
+						var chunk = Math.floor(data.length / 100);
+						var remaining = data.length % 100;
+						return res.render("sendsms", {hasSuccess: true, hasError: false, file: _res, chunks: chunk, files: req.user.uploadedFiles, compare_chunks: _res.chunks, remaining: remaining});
+					}
+				});	
+			} 
+			else {
+				return res.render("sendsms", {hasSuccess: false, hasError: true, message: "Invalid file!", files: req.user.uploadedFiles});	
+			}
+
+		},
+
+		ajax:  async function(req, res) {
+			console.log(req.body);
+
+			if (fs.existsSync(path.join(__dirname, "../public" + req.body.file))) {
+				var Excel = require('exceljs');
+				var wb = new Excel.Workbook();
+				var filePath = path.resolve(__dirname,'../public' + req.body.file);
+
+				wb.xlsx.readFile(filePath).then(async function(){
+					var sh = wb.getWorksheet("Sheet1");
+					let data = new Array();
+					var patt = /^((\+92)|(0092))-{0,1}\d{3}-{0,1}\d{7}$|^\d{11}$|^\d{4}-\d{7}$/;
+            		//Get all the rows data [1st and 2nd column]
+					let j = 0;
+					for (let i = 0; i < sh.rowCount; i++) {
+						var number = sh.getRow(i).getCell(1).value;
+						if(number != null && number.length >= 11 && patt.test(number)) {
+							data[j] = number;
+							j++;
+						}
+					}
+					//Send Response
+					j = 0;
+					let _response = [];
+					let chunk = req.params.chunk;
+
+					if(data.length > (chunk * 10)) {
+						let i = chunk * 10;
+
+						while(i > ((chunk * 10) - 10)) {
+							_response[j] = data[i];
+							j++;
+							i--;
+						}
+					}
+
+					_response = _response.reverse();
+					var count = 2;
+
+					/*if(_response.length >= 1 && _response.length <= 10) {
+						for(let k = 0; k < _response.length; k++) {
+							const url = 'http://api.m4sms.com/api/sendsms?id='+process.env.USER+'&pass='+process.env.PASS+'&mobile='+encodeURI(_response[k])+'&brandname='+process.env.BRAND+'&msg='+encodeURI(req.params.message)+'&language=English;';
+							const response = await fetch(url);
+    						const json = await response.json();
+    						if(json.Response == 'sent') {
+    							count = count + 1;
+							}
+    					}
+					}*/
+						
+				
+					if(count > 0) {
+					
+
+						var user = await User.findOne({_id: req.user._id});
+						var file = req.user.searchFile(req.params.file);
+						var index = req.user.uploadedFiles.map(function(e) { return e.path; }).indexOf(req.body.file);
+						console.log("------------- index ------------" + index);
+						
+
+						user.uploadedFiles[index].chunks.push(req.body.chunk - 1);
+						var r = await user.save();
+
+						if (r) {
+				    		return res.send({error: false, sent: count});
+				    	}
+						else {
+							return res.send({error: true});
+						}	
+					}
+
+				});
+			}	 
+			else {
+					return res.send({error: "file not found"});
+			}
+		
 		},
 		
 		logOut: function (req, res) {

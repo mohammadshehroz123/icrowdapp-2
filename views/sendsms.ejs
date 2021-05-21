@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Join Brothers Consultancy. | Upload</title>
+    <title>Join Brothers Consultancy. | Send Bulk Sms</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Font Awesome -->
@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
     <!-- summernote -->
     <link rel="stylesheet" href="plugins/summernote/summernote-bs4.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 
@@ -46,92 +47,82 @@
                         <% }) %>
                     </div>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link" href="/upload">Upload File</a>
                 </li>
                 <li>
                     <a class="nav-link" href="/testing">Testing</a>
                 </li>
-                <li class="nav-item">
+				<li class="nav-item">
                     <a class="nav-link" href="/logout">Logout</a>
                 </li>
             </ul>
         </nav>
-        
-        <div class="modal" id="myModal">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                <!-- Modal Header -->
-                    <div class="modal-header">
-                        <h4 class="modal-title">Upload File</h4>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
 
-                <!-- Modal body -->
-                    <div class="modal-body">
-                        Please select valid Excel File *
-                    </div>
 
-                <!-- Modal footer -->
-                    <div class="modal-footer">
-                        <form method="POST" action="/file/upload" enctype="multipart/form-data" class="mx-auto">
-                            <input type="text" required placeholder="Title" name="title" class="form-control w-100 my-2" />
-                            <input type="file" name="filetoupload" required="" />
-                            <button type="submit" class="btn btn-success">Upload</button>
-                        </form>
-                    </div>
+	
+		<div class="container">
+	
+		<div class="row">
+			<div class="col-lg-6">
+				<h1 class="font-weight-light text-center text-lg-left mt-4 mb-0">BULK SMS DETAILS</h1>
+			</div>
+			
+		</div>
+		</br>
 
-                </div>
-            </div>
-        </div>
+        <hr class="mt-2 mb-5">
 
-        <div class="container">
-    
-        <div class="row">
-            <div class="col-lg-6">
-                <h1 class="font-weight-light text-center text-lg-left mt-4 mb-0">Uploaded Images</h1>
-            </div>
-            <div class="col-lg-6" style="text-align: center;">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" style=" margin: 0; position: absolute; top: 75%;-ms-transform: translateY(-50%);transform: translateY(-50%);">
-                    Upload File
-                </button>
-            </div>
-        </div>
-        </br>
 
-        <% if(hasError) {%>
+		<% if(hasError) {%>
             <div class="alert alert-danger text-center mx-auto" style="max-width: 50% !important;">
                 <h6 style="display : inline-block;"><%= message %></h6>
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
             </div>
         <% } %>
 
-        <% if(hasSuccess) {%>
-            <div class="alert alert-success text-center mx-auto" style="max-width: 50% !important;">
-                <h6 style="display : inline-block;"><%= message %></h6>
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            </div>
-        <% } %>
-
-        <hr class="mt-2 mb-5">
-
-        <div class="row text-center text-lg-center">
-
+        <img src="/uploads/loader.gif" id="image" alt="" style="display: block;margin-left: auto;margin-right: auto;"/>
             
-            <% _.forEach(files, function(file, index){ %>
-                <div class="col-lg-3 col-md-4 col-6 text-center py-2 m-2" style="border: 1px solid black; border-radius: 1em; box-sizing: border-box !important;">
-                    <h6>File # <%= (index + 1) %> : <%= file.title %></h6> 
-                    <a href="#" class="d-block mb-2">
-                        <img class="img-fluid img-thumbnail" style="width:200px !important; height: 200px !important;" src="/uploads/excel.jpg" alt="">
-                    </a>
-                    <div class="input-group text-center">
-                        <a target="_blank" href="/details<%= file.path %>" class="btn btn-info mx-auto" id="<%= index %>">Details</a>
-                        <a  href="/delete<%= file.path %>" class="btn btn-danger mx-auto" id="<%= index %>">Delete</a>
-                    </div>                  
-                </div>
-            <% }) %>
-            
-            
+
+        <% if(hasSuccess) { %>
+        <input type="hidden" name="file" value="<%= file.path %>" id="file"/>
+        <input type="hidden" name="remaining" value="<%= remaining %>" id="remaining"/>
+        <input type="text" class="form-control w-50 mx-auto" id="message" name="message" placeholder="Enter message!"/>
+        <table class="table w-50 mx-auto my-2" id="holder">
+            <thead class="my-2">
+              <tr>
+                <th>Index</th>
+                <th>Chunk #</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+                <% for(var i=0; i<chunks; i++) { %>
+                <tr>
+                    <td><%= i %></td>
+                    <td>Chunk # <%= (i + 1) %></td>
+                    
+                    <% if(compare_chunks.indexOf(i) > -1) { %>
+                        <td>Sent</td>
+                    <% } else { %>
+                        <td>Unsent</td>
+                    <% } %>
+
+                    <% if(compare_chunks.indexOf(i) > -1) { %>
+                        <td><i class="fa fa-check-circle"></i></td>
+                    <% } else { %>
+                        <td><button type="button" class="btn btn-primary ajax" id="chunk_<%= (i+1) %>" class="btn btn-primary" >Send</button></td>
+                    <% } %>
+                </tr>
+                <% } %>
+            </tbody>
+    </table>
+<% } %>
+
+		<hr class="mt-2 mb-5">
+			
   </div>
 
 </div>
@@ -140,8 +131,8 @@
 
     <!-- jQuery -->
     <!-- jQuery UI 1.11.4 -->
-    <script src="plugins/jquery/jquery.min.js"></script>
-    <script src="plugins/jquery-ui/jquery-ui.min.js"></script>
+	<script src="plugins/jquery/jquery.min.js"></script>
+	<script src="plugins/jquery-ui/jquery-ui.min.js"></script>
     <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
     <script>
         $.widget.bridge('uibutton', $.ui.button)
@@ -173,5 +164,46 @@
     <!-- AdminLTE for demo purposes -->
     <script src="dist/js/demo.js"></script>
 </body>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+    $('#image').hide();
+    $('.ajax').on('click', function(){
+        if($('#message').val() == '') {
+            window.alert("Enter message");
+            $('#message').focus();
+            return;
+        }
+
+        var message = $('#message').val();
+        var chunk = $(this).attr('id').split('_')[1];
+        var file = $('#file').val();
+        $('#image').show();
+        $('#holder').hide();
+        $('#message').hide();
+        console.log("/ajax/"+chunk+"/"+encodeURI(message)+""+file);
+        $.ajax({
+            url: "http://localhost:3000/ajax",
+            type: "POST",
+            data: JSON.stringify({message: encodeURI(message), chunk: chunk, file: file}),
+            contentType: 'application/json',
+            success: function(response){
+                console.log(response);
+                if(Object.keys(response).length > 0) {
+                    $('#image').hide();
+
+                    if(!response.error) {
+                        window.alert(response.sent + " Sent successfully!");
+                        location.reload();
+                    } else {
+                        $('#holder').show();
+                    }
+                }
+            }
+        });
+    }); 
+    });
+    </script>
+
 
 </html>

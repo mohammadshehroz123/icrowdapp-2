@@ -51,27 +51,32 @@ module.exports = function (formidable, passport, validation, User, email) {
 
 			router.get('/upload', authenticate, this.uploadView);
 			router.post('/file/upload', authenticate, this.uploadFile);
-			router.get('/delete/uploads/:file', this.deleteFile);
+			router.get('/delete/uploads/:file', authenticate, this.deleteFile);
 			
-			router.get('/details/uploads/:file', this.details);
+			router.get('/details/uploads/:file', authenticate, this.details);
 
 			router.get('/testing', authenticate, this.testingView);
 			router.post('/testing', authenticate, validation.validateNumber, this.testing);
 
-			router.get('/sendsms/uploads/:file', this.sendSmsView);
-			router.post('/ajax', this.ajax);
+			router.get('/sendsms/uploads/:file', authenticate, this.sendSmsView);
+			router.post('/ajax', authenticate, this.ajax);
 			
 			router.get('/dashboard', authenticate, this.dashboard);
-			router.get('/logout', this.logOut);
+			router.get('/logout', authenticate, this.logOut);
 		},
 
 		homePage: function (req, res) {
-			res.send("Welcome");
+			res.redirect('/login');
 		},
 
 		loginView: function (req, res) {
-			let messages = req.flash('error');
-			res.render("login", { hasErrors: (messages.length > 0) ? true : false, messages: messages });
+			if(req.user) {
+				res.redirect('/dashboard');
+			}
+			else {
+				let messages = req.flash('error');
+				res.render("login", { hasErrors: (messages.length > 0) ? true : false, messages: messages });
+			}	
 		},
 
 		login: passport.authenticate('local.login', {

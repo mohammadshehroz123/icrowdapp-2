@@ -120,7 +120,7 @@ module.exports = function (formidable, passport, validation, User, email) {
 								res.render("forgot_password", { hasErrors: false, hasSuccess: true, messages: ['Reset link sent successfully. Check your email' ] });
 							}
 							if (error) {
-								console.log(error);
+								
 							}
 						});
 					});
@@ -176,7 +176,7 @@ module.exports = function (formidable, passport, validation, User, email) {
 							$push: {uploadedFiles: {title: req.body.title, path: "/uploads/" + req.file.filename, chunks: []} }
 						}, function(err, doc) {
 						if(err) {
-							console.log(err);
+							
 						}
 						if(doc) {
 							res.redirect("/upload");
@@ -197,13 +197,13 @@ module.exports = function (formidable, passport, validation, User, email) {
 					try {
 						fs.unlink( path.join(__dirname, "../public/uploads/" + req.params.file), (err) => {
 							if(err) {
-								return console.log(err);
+								
 							}
 							return;
 						});
 				
 					} catch(err) {
-						console.log(err);
+						
 					} finally {
 						res.redirect("/upload");
 					}
@@ -286,8 +286,7 @@ module.exports = function (formidable, passport, validation, User, email) {
 		},
 
 		ajax:  async function(req, res) {
-			console.log(req.body);
-
+			
 			if (fs.existsSync(path.join(__dirname, "../public" + req.body.file))) {
 				var Excel = require('exceljs');
 				var wb = new Excel.Workbook();
@@ -324,7 +323,7 @@ module.exports = function (formidable, passport, validation, User, email) {
 					_response = _response.reverse();
 					var count = 2;
 
-					/*if(_response.length >= 1 && _response.length <= 10) {
+					if(_response.length >= 1 && _response.length <= 10) {
 						for(let k = 0; k < _response.length; k++) {
 							const url = 'http://api.m4sms.com/api/sendsms?id='+process.env.USER+'&pass='+process.env.PASS+'&mobile='+encodeURI(_response[k])+'&brandname='+process.env.BRAND+'&msg='+encodeURI(req.params.message)+'&language=English;';
 							const response = await fetch(url);
@@ -333,7 +332,7 @@ module.exports = function (formidable, passport, validation, User, email) {
     							count = count + 1;
 							}
     					}
-					}*/
+					}
 						
 				
 					if(count > 0) {
@@ -342,7 +341,6 @@ module.exports = function (formidable, passport, validation, User, email) {
 						var user = await User.findOne({_id: req.user._id});
 						var file = req.user.searchFile(req.params.file);
 						var index = req.user.uploadedFiles.map(function(e) { return e.path; }).indexOf(req.body.file);
-						console.log("------------- index ------------" + index);
 						
 
 						user.uploadedFiles[index].chunks.push(req.body.chunk - 1);

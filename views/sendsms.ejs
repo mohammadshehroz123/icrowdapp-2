@@ -183,7 +183,7 @@
         $('#message').hide();
         console.log("/ajax/"+chunk+"/"+encodeURI(message)+""+file);
         $.ajax({
-            url: "ajax",
+            url: "/ajax",
             type: "POST",
             data: JSON.stringify({message: encodeURI(message), chunk: chunk, file: file}),
             contentType: 'application/json',

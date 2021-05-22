@@ -194,25 +194,28 @@ module.exports = function (formidable, passport, validation, User, email) {
 
 		deleteFile: async function(req, res) {
 			if (fs.existsSync(path.join(__dirname, "../public/uploads/" + req.params.file))) {
-				
-					try {
-						fs.unlink( path.join(__dirname, "../public/uploads/" + req.params.file), async (err) => {
-							if(err) {
+					
+					var file = req.user.searchFile(req.params.file);
+					var index = req.user.uploadedFiles.map(function(e) { return e.path; }).indexOf("/uploads/"+req.params.file);
+					var r = await User.findOneAndUpdate({_id: req.user._id}, {$pull:{'uploadedFiles': file}});
+
+					if(r) {
+						try {
+							fs.unlink( path.join(__dirname, "../public/uploads/" + req.params.file), async (err) => {
+								if(err) {
 								
-							}
-							else {
-								var file = req.user.searchFile(req.params.file);
-								var index = req.user.uploadedFiles.map(function(e) { return e.path; }).indexOf("/uploads/"+req.params.file);
-								var r = await User.findOneAndUpdate({_id: req.user._id}, {$pull:{'uploadedFiles': file}});
-							}
-						});
+								}
+							});
 				
-					} catch(err) {
+						} catch(err) {
 						
-					} finally {
-						res.redirect("/upload");
+						} finally {
+							res.redirect("/upload");
+						}
 					}
 				
+			} else {
+				res.redirect('/upload');
 			}
 		},
 		
@@ -299,11 +302,12 @@ module.exports = function (formidable, passport, validation, User, email) {
 
 				wb.xlsx.readFile(filePath).then(async function(){
 					var sh = wb.getWorksheet("Sheet1");
-					let data = new Array();
+					let data = [];
 					var patt = /^((\+92)|(0092))-{0,1}\d{3}-{0,1}\d{7}$|^\d{11}$|^\d{4}-\d{7}$/;
             		//Get all the rows data [1st and 2nd column]
+					let i = 0;
 					let j = 0;
-					for (let i = 0; i < sh.rowCount; i++) {
+					for (i = 0; i < sh.rowCount; i++) {
 						var number = sh.getRow(i).getCell(1).value;
 						if(number != null && number.length >= 11 && patt.test(number)) {
 							data[j] = number;
@@ -312,25 +316,27 @@ module.exports = function (formidable, passport, validation, User, email) {
 					}
 					//Send Response
 					j = 0;
+					i = 0;
 					let _response = [];
-					let chunk = req.params.chunk;
+					let chunk = req.body.chunk;
 
-					if(data.length > (chunk * 10)) {
-						let i = chunk * 10;
+					if(data.length > (chunk * 100)) {
+						i = chunk * 100;
 
-						while(i > ((chunk * 10) - 10)) {
+						while(i > ((chunk * 100) - 100)) {
 							_response[j] = data[i];
 							j++;
 							i--;
 						}
 					}
 
+					
 					_response = _response.reverse();
 					var count = 0;
 
 					if(_response.length >= 1 && _response.length <= 100) {
 						for(let k = 0; k < _response.length; k++) {
-							const url = 'http://api.m4sms.com/api/sendsms?id='+process.env.USER+'&pass='+process.env.PASS+'&mobile='+encodeURI(_response[k])+'&brandname='+process.env.BRAND+'&msg='+encodeURI(req.params.message)+'&language=English;';
+							const url = 'http://api.m4sms.com/api/sendsms?id='+process.env.USER+'&pass='+process.env.PASS+'&mobile='+encodeURI(_response[k])+'&brandname='+process.env.BRAND+'&msg='+encodeURI(req.body.message)+'&language=English;';
 							const response = await fetch(url);
     						const json = await response.json();
     						if(json.Response == 'sent') {
@@ -340,7 +346,7 @@ module.exports = function (formidable, passport, validation, User, email) {
 					}
 						
 				
-					if(count > 0) {
+					if(count >= 90 && count <= 100) {
 					
 
 						var user = await User.findOne({_id: req.user._id});
@@ -355,14 +361,14 @@ module.exports = function (formidable, passport, validation, User, email) {
 				    		return res.send({error: false, sent: count});
 				    	}
 						else {
-							return res.send({error: true});
+							return res.send({error: true, message: "Failed to send!"});
 						}	
 					}
 
 				});
 			}	 
 			else {
-					return res.send({error: "file not found"});
+					return res.send({error: true,message: "Failed to send!"});
 			}
 		
 		},

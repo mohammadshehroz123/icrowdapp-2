@@ -196,7 +196,7 @@ module.exports = function (formidable, passport, validation, User, email) {
 			if (fs.existsSync(path.join(__dirname, "../public/uploads/" + req.params.file))) {
 				
 					try {
-						fs.unlink( path.join(__dirname, "../public/uploads/" + req.params.file), (err) => {
+						fs.unlink( path.join(__dirname, "../public/uploads/" + req.params.file), async (err) => {
 							if(err) {
 								return res.redirect('/upload');
 							}

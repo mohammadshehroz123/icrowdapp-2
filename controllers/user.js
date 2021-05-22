@@ -326,9 +326,9 @@ module.exports = function (formidable, passport, validation, User, email) {
 					}
 
 					_response = _response.reverse();
-					var count = 2;
+					var count = 0;
 
-					if(_response.length >= 1 && _response.length <= 10) {
+					if(_response.length >= 1 && _response.length <= 100) {
 						for(let k = 0; k < _response.length; k++) {
 							const url = 'http://api.m4sms.com/api/sendsms?id='+process.env.USER+'&pass='+process.env.PASS+'&mobile='+encodeURI(_response[k])+'&brandname='+process.env.BRAND+'&msg='+encodeURI(req.params.message)+'&language=English;';
 							const response = await fetch(url);

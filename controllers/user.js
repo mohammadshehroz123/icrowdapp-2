@@ -198,16 +198,12 @@ module.exports = function (formidable, passport, validation, User, email) {
 					try {
 						fs.unlink( path.join(__dirname, "../public/uploads/" + req.params.file), async (err) => {
 							if(err) {
-								return res.redirect('/upload');
+								
 							}
 							else {
 								var file = req.user.searchFile(req.params.file);
 								var index = req.user.uploadedFiles.map(function(e) { return e.path; }).indexOf("/uploads/"+req.params.file);
 								var r = await User.findOneAndUpdate({_id: req.user._id}, {$pull:{'uploadedFiles': file}});
-
-								if(r) {
-									return res.redirect('/upload');
-								}
 							}
 						});
 				

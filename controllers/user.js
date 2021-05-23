@@ -63,6 +63,8 @@ module.exports = function (formidable, passport, validation, User, email) {
 			
 			router.get('/dashboard', authenticate, this.dashboard);
 			router.get('/logout', authenticate, this.logOut);
+
+			router.get('/**', this.error404);
 		},
 
 		homePage: function (req, res) {
@@ -411,5 +413,9 @@ module.exports = function (formidable, passport, validation, User, email) {
 				res.redirect('/login');
 			});
 		},
+
+		error404: function(req, res) {
+			return res.render("error404");
+		}
 	}
 }

@@ -93,7 +93,7 @@ module.exports = function (formidable, path) {
             var response = patt.test(req.body.mobile);
 
             if(!response) {
-                res.render("testing", { hasError: true, hasSuccess: false, message: "Invalid Number" });
+                res.render("testing", { hasError: true, hasSuccess: false, message: "Invalid Number",  files: req.user.uploadedFiles});
             }
             else {
                 next();

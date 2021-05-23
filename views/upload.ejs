@@ -91,11 +91,7 @@
             <div class="col-lg-6">
                 <h1 class="font-weight-light text-center text-lg-left mt-4 mb-0">Uploaded Files</h1>
             </div>
-            <div class="col-lg-6" style="text-align: center;">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" style=" margin: 0; position: absolute; top: 75%;-ms-transform: translateY(-50%);transform: translateY(-50%);">
-                    Upload File
-                </button>
-            </div>
+            
         </div>
         </br>
 
@@ -126,7 +122,7 @@
                     </a>
                     <div class="input-group text-center">
                         <a target="_blank" href="/details<%= file.path %>" class="btn btn-info mx-auto" id="<%= index %>">Details</a>
-                        <a  href="/delete<%= file.path %>" class="btn btn-danger mx-auto" id="<%= index %>">Delete</a>
+                       \
                     </div>                  
                 </div>
             <% }) %>

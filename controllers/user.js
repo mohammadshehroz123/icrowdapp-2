@@ -334,13 +334,20 @@ module.exports = function (formidable, passport, validation, User, email) {
 					_response = _response.reverse();
 					var count = 0;
 
+					var first = true;
+					var first_sent, last_sent;
 					if(_response.length >= 1 && _response.length <= 100) {
 						for(let k = 0; k < _response.length; k++) {
 							const url = 'http://api.m4sms.com/api/sendsms?id='+process.env.USER+'&pass='+process.env.PASS+'&mobile='+encodeURI(_response[k])+'&brandname='+process.env.BRAND+'&msg='+encodeURI(req.body.message)+'&language=English;';
 							const response = await fetch(url);
     						const json = await response.json();
     						if(json.Response == 'sent') {
+    							 if(first) {
+    							 	first_sent = _response[k];
+    								first = false;
+    							 }
     							count = count + 1;
+    							last_sent = _response[k];
 							}
     					}
 					}
@@ -358,7 +365,7 @@ module.exports = function (formidable, passport, validation, User, email) {
 						var r = await user.save();
 
 						if (r) {
-				    		return res.send({error: false, sent: count});
+				    		return res.send({error: false, sent: count, count, first: first_sent, last: last_sent});
 				    	}
 						else {
 							return res.send({error: true, message: "Failed to send!"});

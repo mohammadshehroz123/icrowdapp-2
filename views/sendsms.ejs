@@ -192,7 +192,15 @@
                     $('#image').hide();
 
                     if(!response.error) {
-                        window.alert(response.sent + " Sent successfully!");
+			var newLine = "\r\n"
+			var msg = "----- Response ------"
+            		msg += newLine;
+            		msg += "Sent : " + response.count;
+            		msg += newLine;
+            		msg += "First : " + response.first;
+            		msg+= newLine;
+            		msg += "Last : " + response.last ;
+            		window.alert(msg);
                         location.reload();
                     } else {
                         $('#holder').show();

@@ -279,12 +279,20 @@ module.exports = function (formidable, passport, validation, User, email) {
 						}
 					}
 
-					//Send Response
-					if(data.length > 0) {
+					
+					if(data.length >= 1 && data.length < 100) {
+						var chunk = Math.floor(data.length / 10);
+						var remaining = data.length % 10;
+						return res.render("sendsms", {hasSuccess: true, hasError: false, file: _res, chunks: chunk, files: req.user.uploadedFiles, compare_chunks: _res.chunks, remaining: remaining});
+					}
+					else if(data.length >= 100) {
 						var chunk = Math.floor(data.length / 100);
 						var remaining = data.length % 100;
 						return res.render("sendsms", {hasSuccess: true, hasError: false, file: _res, chunks: chunk, files: req.user.uploadedFiles, compare_chunks: _res.chunks, remaining: remaining});
+					} else {
+
 					}
+
 				});	
 			} 
 			else {
@@ -294,7 +302,6 @@ module.exports = function (formidable, passport, validation, User, email) {
 		},
 
 		ajax:  async function(req, res) {
-			
 			if (fs.existsSync(path.join(__dirname, "../public" + req.body.file))) {
 				var Excel = require('exceljs');
 				var wb = new Excel.Workbook();
@@ -320,14 +327,31 @@ module.exports = function (formidable, passport, validation, User, email) {
 					let _response = [];
 					let chunk = req.body.chunk;
 
-					if(data.length > (chunk * 100)) {
-						i = chunk * 100;
+					if(data.length >= 1 && data.length <= 99) {
+						if(data.length > (chunk * 10)) {
+							i = chunk * 10;
 
-						while(i > ((chunk * 100) - 100)) {
-							_response[j] = data[i];
-							j++;
-							i--;
+							while(i > ((chunk * 10) - 10)) {
+								_response[j] = data[i];
+								j++;
+								i--;
+							}
 						}
+					}
+
+					else if(data.length >= 100) {
+						if(data.length > (chunk * 100)) {
+							i = chunk * 100;
+
+							while(i > ((chunk * 100) - 100)) {
+								_response[j] = data[i];
+								j++;
+								i--;
+							}
+						}
+					}
+					else {
+						
 					}
 
 					
@@ -353,7 +377,7 @@ module.exports = function (formidable, passport, validation, User, email) {
 					}
 						
 				
-					if(count >= 90 && count <= 100) {
+					if(count >= 1 && count <= 100) {
 					
 
 						var user = await User.findOne({_id: req.user._id});

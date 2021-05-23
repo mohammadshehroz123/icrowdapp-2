@@ -185,7 +185,7 @@
         $.ajax({
             url: "/ajax",
             type: "POST",
-            data: JSON.stringify({message: encodeURI(message), chunk: chunk, file: file}),
+            data: JSON.stringify({message: message, chunk: chunk, file: file}),
             contentType: 'application/json',
             success: function(response){
                 if(Object.keys(response).length > 0) {

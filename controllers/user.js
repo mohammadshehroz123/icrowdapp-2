@@ -280,7 +280,7 @@ module.exports = function (formidable, passport, validation, User, email) {
 					}
 
 					
-					if(data.length >= 1 && data.length < 100) {
+					if(data.length >= 1 && data.length <= 99) {
 						var chunk = Math.floor(data.length / 10);
 						var remaining = data.length % 10;
 						return res.render("sendsms", {hasSuccess: true, hasError: false, file: _res, chunks: chunk, files: req.user.uploadedFiles, compare_chunks: _res.chunks, remaining: remaining});
@@ -351,7 +351,7 @@ module.exports = function (formidable, passport, validation, User, email) {
 						}
 					}
 					else {
-						
+
 					}
 
 					
